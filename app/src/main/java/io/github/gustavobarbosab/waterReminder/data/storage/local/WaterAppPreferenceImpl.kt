@@ -1,29 +1,26 @@
 package io.github.gustavobarbosab.waterReminder.data.storage.local
 
 import android.content.Context
-import android.content.SharedPreferences
 
-object WaterAppPreferenceImpl : WaterAppPreference {
+class WaterAppPreferenceImpl : WaterAppPreference {
 
-    private const val WATER_APPLICATION_PREFERENCE = "WATER_APPLICATION_PREFERENCE"
-    private const val KEY_WATER_COUNT = "water-count"
-    const val KEY_CHARGING_REMINDER_COUNT = "charging-reminder-count"
-
-    private var waterPreferences: SharedPreferences? = null
-
-    fun initPreferences(waterContext: Context) {
-        waterPreferences = waterContext.getSharedPreferences(
-            WATER_APPLICATION_PREFERENCE,
-            Context.MODE_PRIVATE
-        )
+    companion object {
+        private const val WATER_APPLICATION_PREFERENCE = "WATER_APPLICATION_PREFERENCE"
+        private const val KEY_WATER_COUNT = "water-count"
     }
 
-    override fun getTotalWaterCups(): Int = waterPreferences?.getInt(KEY_WATER_COUNT, 0) ?: 0
+    private fun waterPreferences(context: Context) = context.getSharedPreferences(
+        WATER_APPLICATION_PREFERENCE,
+        Context.MODE_PRIVATE
+    )
 
-    override fun saveNewTotalWaterCups(total: Int) {
-        waterPreferences
+    override fun getTotalWaterCups(context: Context): Int =
+        waterPreferences(context)?.getInt(KEY_WATER_COUNT, 0) ?: 0
+
+    override fun saveNewTotalWaterCups(context: Context, total: Int) {
+        waterPreferences(context)
             ?.edit()
-            ?.putInt(KEY_WATER_COUNT,total)
+            ?.putInt(KEY_WATER_COUNT, total)
             ?.apply()
     }
 }

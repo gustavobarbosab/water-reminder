@@ -11,9 +11,13 @@ class WaterReminderWorker(
     workerParams: WorkerParameters
 ) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
-        val reminderService = Intent(applicationContext, WaterReminderService::class.java)
-        reminderService.action = WaterReminderService.ACTION_REMINDER_USER
-        applicationContext.startService(reminderService)
-        return Result.success()
+        return try {
+            val reminderService = Intent(applicationContext, WaterReminderService::class.java)
+            reminderService.action = WaterReminderService.ACTION_REMINDER_USER
+            applicationContext.startService(reminderService)
+            Result.success()
+        } catch (e: Exception) {
+            Result.retry()
+        }
     }
 }

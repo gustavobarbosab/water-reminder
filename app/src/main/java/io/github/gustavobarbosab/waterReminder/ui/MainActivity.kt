@@ -1,28 +1,47 @@
 package io.github.gustavobarbosab.waterReminder.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import io.github.gustavobarbosab.waterReminder.R
-import io.github.gustavobarbosab.waterReminder.data.repository.WaterRepository
+import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreference
+import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreferenceImpl
 import io.github.gustavobarbosab.waterReminder.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: MainViewModel
+    lateinit var preferences: WaterAppPreference
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.action == UPDATE_TOTAL) {
+            updateViewModelTotal()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModelFactory = MainViewModelFactory(WaterRepository)
-        viewModel = ViewModelProviders.of(this,viewModelFactory)[MainViewModel::class.java]
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
+        preferences = WaterAppPreferenceImpl()
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
         setSupportActionBar(binding.toolbar)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateViewModelTotal()
+    }
+
+    private fun updateViewModelTotal() {
+        viewModel.totalWaterCups = preferences.getTotalWaterCups(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -39,5 +58,15 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    companion object {
+        const val UPDATE_TOTAL = "UPDATE_TOTAL"
+
+        fun newIntentUpdateTotal(context: Context) =
+            Intent(context, MainActivity::class.java).apply {
+                action = UPDATE_TOTAL
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
     }
 }
