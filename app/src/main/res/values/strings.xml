@@ -3,4 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="title">Olá, você já tomou:</string>
     <string name="counter">%1$s copos de água</string>
+    <string name="main_notification_channel_name">Reminder drink water</string>
+    <string name="charging_reminder_notification_title">Está na hora de tomar água</string>
+    <string name="charging_reminder_notification_body">Você já tomou %d copos hoje</string>
 </resources>

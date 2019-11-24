@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.github.gustavobarbosab.waterReminder">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".WaterReminderApplication"
         android:allowBackup="false"
@@ -15,6 +17,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,8 +26,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".data.sync.WaterService"
-            android:exported="false"/>
+        <service
+            android:name=".data.sync.service.WaterReminderService"
+            android:exported="false" />
     </application>
 
 </manifest>
