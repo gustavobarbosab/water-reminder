@@ -3,7 +3,20 @@
     <string name="action_settings">Settings</string>
     <string name="title">Olá, você já tomou:</string>
     <string name="counter">%1$s copos de água</string>
-    <string name="main_notification_channel_name">Reminder drink water</string>
+    <string name="main_notification_channel_name">Lembrete para beber água</string>
     <string name="charging_reminder_notification_title">Está na hora de tomar água</string>
-    <string name="charging_reminder_notification_body">Você já tomou %d copos hoje</string>
+    <string name="charging_reminder_notification_body">Você já tomou %d copos</string>
+    <string name="no_thanks">Não, obrigado.</string>
+    <string name="did_it">Eu bebi!</string>
+
+    <plurals name="charging_reminder_notification_body">
+        <item quantity="one">Você já tomou %d copo</item>
+        <item quantity="other">Você já tomou %d copos</item>
+    </plurals>
+
+    <plurals name="main_counter">
+        <item quantity="one">%d copo de água</item>
+        <item quantity="other">%d copos de água</item>
+    </plurals>
+
 </resources>

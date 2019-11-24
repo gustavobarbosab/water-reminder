@@ -11,7 +11,10 @@ class WaterReminderWorkerManager {
 
     private val minutes = TimeUnit.MINUTES
 
-    fun startWorker(context: Context, periodic: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.REPLACE) {
+    fun startWorker(
+        context: Context,
+        periodic: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.REPLACE
+    ) {
         val constraints = constraints()
         val reminderUser = periodicWorkRequest(constraints)
 
@@ -38,14 +41,14 @@ class WaterReminderWorkerManager {
 
     private fun periodicWorkRequest(constraints: Constraints): PeriodicWorkRequest =
         PeriodicWorkRequest
-            .Builder(WaterReminderWorker::class.java, FIFTEEN, minutes)
-            .setInitialDelay(FIFTEEN, minutes)
+            .Builder(WaterReminderWorker::class.java, SIXTY, minutes)
+           // .setInitialDelay(SIXTY, minutes)
             .setConstraints(constraints)
             .build()
 
 
     companion object {
         private const val WORKER_NAME = "WaterReminderWorker"
-        private const val FIFTEEN = 15L
+        private const val SIXTY = 60L
     }
 }

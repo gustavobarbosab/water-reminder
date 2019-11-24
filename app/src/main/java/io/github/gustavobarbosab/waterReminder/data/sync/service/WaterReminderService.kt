@@ -1,8 +1,9 @@
 package io.github.gustavobarbosab.waterReminder.data.sync.service
 
 import android.app.IntentService
+import android.content.Context
 import android.content.Intent
-import io.github.gustavobarbosab.waterReminder.data.notification.WaterReminederNotificationUtil
+import io.github.gustavobarbosab.waterReminder.data.notification.WaterReminderNotificationUtil
 import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreference
 import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreferenceImpl
 import io.github.gustavobarbosab.waterReminder.ui.MainActivity
@@ -25,11 +26,11 @@ class WaterReminderService : IntentService(WATER_SERVICE) {
     }
 
     fun reminderUser(totalWaterCups: Int) {
-        WaterReminederNotificationUtil.remindUser(this, totalWaterCups)
+        WaterReminderNotificationUtil.remindUser(this, totalWaterCups)
     }
 
     fun clearAllNotifications() {
-        WaterReminederNotificationUtil.clearAllNotifications(this)
+        WaterReminderNotificationUtil.clearAllNotifications(this)
     }
 
     override fun onDestroy() {
@@ -47,5 +48,23 @@ class WaterReminderService : IntentService(WATER_SERVICE) {
         const val ACTION_REMINDER_USER: String = "ACTION_REMINDER_USER"
         const val ACTION_DISMISS_NOTIFICATION: String = "ACTION_DISMISS_NOTIFICATION"
         const val ACTION_INCREMENT_WATER_COUNT: String = "ACTION_INCREMENT_WATER_COUNT"
+
+        fun newIntentActionReminder(context: Context) =
+            Intent(context,WaterReminderService::class.java)
+                .apply {
+                    action = ACTION_REMINDER_USER
+                }
+
+        fun newIntentActionDismiss(context: Context) =
+            Intent(context,WaterReminderService::class.java)
+                .apply {
+                    action = ACTION_DISMISS_NOTIFICATION
+                }
+
+        fun newIntentActionWaterCount(context: Context) =
+            Intent(context,WaterReminderService::class.java)
+                .apply {
+                    action = ACTION_INCREMENT_WATER_COUNT
+                }
     }
 }
