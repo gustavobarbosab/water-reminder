@@ -1,7 +1,10 @@
 package io.github.gustavobarbosab.waterReminder.data.sync.service
 
 class WaterServicePresenter(
-    private var waterService: WaterReminderService?) {
+    private var waterService: WaterReminderService?
+) {
+
+    // TODO criar contrato
 
     fun incrementWaterCup(totalCups: Int) {
         waterService?.saveNewTotalWaterCups(totalCups + 1)

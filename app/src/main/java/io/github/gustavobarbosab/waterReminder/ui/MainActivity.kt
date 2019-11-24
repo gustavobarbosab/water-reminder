@@ -9,18 +9,22 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.work.ExistingPeriodicWorkPolicy.KEEP
 import io.github.gustavobarbosab.waterReminder.R
 import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreference
 import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreferenceImpl
+import io.github.gustavobarbosab.waterReminder.data.sync.worker.WaterReminderWorkerManager
 import io.github.gustavobarbosab.waterReminder.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: MainViewModel
     lateinit var preferences: WaterAppPreference
+    lateinit var workManager: WaterReminderWorkerManager
 
-    private val dynamicBroadcastWaterReminder: BroadcastReceiver = object: BroadcastReceiver() {
+    private val dynamicBroadcastWaterReminder: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             this@MainActivity.updateViewModelTotal()
         }
@@ -28,23 +32,42 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startDependencies()
+        startDataBinding()
+        setupBroadcast()
+        setupWorker()
+        observeWaterCupsNumberToSaveIt()
+    }
+
+    private fun setupWorker() {
+        workManager.startWorker(this, KEEP)
+    }
+
+    private fun startDependencies() {
         viewModel = ViewModelProviders.of(this)[MainViewModel::class.java]
         preferences = WaterAppPreferenceImpl()
+        workManager = WaterReminderWorkerManager()
+
+    }
+
+    private fun startDataBinding() {
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
         setSupportActionBar(binding.toolbar)
-        setupBroadcast()
+        updateViewModelTotal()
     }
 
     private fun setupBroadcast() {
         val intentFilter = IntentFilter(UPDATE_TOTAL)
-        registerReceiver(dynamicBroadcastWaterReminder,intentFilter)
+        registerReceiver(dynamicBroadcastWaterReminder, intentFilter)
     }
 
-    override fun onResume() {
-        super.onResume()
-        updateViewModelTotal()
+    private fun observeWaterCupsNumberToSaveIt() {
+        viewModel.cupsNumber.observe(this, Observer {
+            preferences.saveNewTotalWaterCups(this, it)
+            workManager.startWorker(this)
+        })
     }
 
     override fun onDestroy() {
@@ -70,6 +93,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val UPDATE_TOTAL = "io.github.gustavobarbosab.waterReminder.ui.MainActivity.UPDATE_TOTAL"
+        const val UPDATE_TOTAL =
+            "io.github.gustavobarbosab.waterReminder.ui.MainActivity.UPDATE_TOTAL"
     }
 }
