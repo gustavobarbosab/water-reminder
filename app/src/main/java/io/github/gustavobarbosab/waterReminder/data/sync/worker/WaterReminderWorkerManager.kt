@@ -42,7 +42,7 @@ class WaterReminderWorkerManager {
     private fun periodicWorkRequest(constraints: Constraints): PeriodicWorkRequest =
         PeriodicWorkRequest
             .Builder(WaterReminderWorker::class.java, SIXTY, minutes)
-           // .setInitialDelay(SIXTY, minutes)
+            .setInitialDelay(SIXTY, minutes)
             .setConstraints(constraints)
             .build()
 
