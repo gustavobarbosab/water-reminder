@@ -1,7 +1,9 @@
 package io.github.gustavobarbosab.waterReminder.ui
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -18,10 +20,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
     lateinit var preferences: WaterAppPreference
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.action == UPDATE_TOTAL) {
-            updateViewModelTotal()
+    private val dynamicBroadcastWaterReminder: BroadcastReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            this@MainActivity.updateViewModelTotal()
         }
     }
 
@@ -33,11 +34,22 @@ class MainActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
         setSupportActionBar(binding.toolbar)
+        setupBroadcast()
+    }
+
+    private fun setupBroadcast() {
+        val intentFilter = IntentFilter(UPDATE_TOTAL)
+        registerReceiver(dynamicBroadcastWaterReminder,intentFilter)
     }
 
     override fun onResume() {
         super.onResume()
         updateViewModelTotal()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(dynamicBroadcastWaterReminder)
     }
 
     private fun updateViewModelTotal() {
@@ -51,9 +63,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
@@ -61,12 +70,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val UPDATE_TOTAL = "UPDATE_TOTAL"
-
-        fun newIntentUpdateTotal(context: Context) =
-            Intent(context, MainActivity::class.java).apply {
-                action = UPDATE_TOTAL
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
+        const val UPDATE_TOTAL = "io.github.gustavobarbosab.waterReminder.ui.MainActivity.UPDATE_TOTAL"
     }
 }

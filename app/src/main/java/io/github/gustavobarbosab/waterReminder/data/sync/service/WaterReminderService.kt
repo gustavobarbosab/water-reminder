@@ -39,7 +39,7 @@ class WaterReminderService : IntentService(WATER_SERVICE) {
 
     fun saveNewTotalWaterCups(totalCups: Int) {
         preferences.saveNewTotalWaterCups(this, totalCups)
-        startActivity(MainActivity.newIntentUpdateTotal(this))
+        sendBroadcast(Intent(MainActivity.UPDATE_TOTAL))
     }
 
     companion object {
