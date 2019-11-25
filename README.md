@@ -4,3 +4,5 @@ Projeto simples exemplificando o uso do WorkManager para rodar uma tarefa perió
 
 ![Tela inicial da aplicação](https://raw.githubusercontent.com/gustavobarbosab/water-reminder/master/water-reminder.png)
 
+
+![Notificação](https://raw.githubusercontent.com/gustavobarbosab/water-reminder/master/water-reminder-notification.png)
