@@ -4,32 +4,24 @@ import android.app.IntentService
 import android.content.Context
 import android.content.Intent
 import io.github.gustavobarbosab.waterReminder.data.notification.WaterReminderNotificationUtil
-import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreference
+import io.github.gustavobarbosab.waterReminder.data.repository.WaterReminderRepositoryImpl
 import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreferenceImpl
 import io.github.gustavobarbosab.waterReminder.ui.MainActivity
 
-class WaterReminderService : IntentService(WATER_SERVICE) {
+class WaterReminderService : IntentService(WATER_SERVICE), WaterReminderServiceContract.Service {
 
-    private val presenter = WaterServicePresenter(this)
-    private val preferences: WaterAppPreference = WaterAppPreferenceImpl()
+    private val presenter: WaterReminderServiceContract.Presenter by lazy {
+        WaterServicePresenter(this, WaterReminderRepositoryImpl(WaterAppPreferenceImpl))
+    }
 
     override fun onHandleIntent(intent: Intent?) {
         when (intent?.action) {
-            ACTION_REMINDER_USER -> presenter.rememberUser(preferences.getTotalWaterCups(this))
+            ACTION_INCREMENT_WATER_COUNT -> presenter.incrementWaterCup()
             ACTION_DISMISS_NOTIFICATION -> presenter.clearAllNotifications()
-            ACTION_INCREMENT_WATER_COUNT -> presenter.incrementWaterCup(
-                preferences.getTotalWaterCups(
-                    this
-                )
-            )
         }
     }
 
-    fun reminderUser(totalWaterCups: Int) {
-        WaterReminderNotificationUtil.remindUser(this, totalWaterCups)
-    }
-
-    fun clearAllNotifications() {
+    override fun clearAllNotifications() {
         WaterReminderNotificationUtil.clearAllNotifications(this)
     }
 
@@ -38,31 +30,23 @@ class WaterReminderService : IntentService(WATER_SERVICE) {
         super.onDestroy()
     }
 
-    fun saveNewTotalWaterCups(totalCups: Int) {
-        preferences.saveNewTotalWaterCups(this, totalCups)
+    override fun notifyWaterCupUpdate() {
         sendBroadcast(Intent(MainActivity.UPDATE_TOTAL))
     }
 
     companion object {
         private const val WATER_SERVICE = "WATER_SERVICE"
-        const val ACTION_REMINDER_USER: String = "ACTION_REMINDER_USER"
         const val ACTION_DISMISS_NOTIFICATION: String = "ACTION_DISMISS_NOTIFICATION"
         const val ACTION_INCREMENT_WATER_COUNT: String = "ACTION_INCREMENT_WATER_COUNT"
 
-        fun newIntentActionReminder(context: Context) =
-            Intent(context,WaterReminderService::class.java)
-                .apply {
-                    action = ACTION_REMINDER_USER
-                }
-
         fun newIntentActionDismiss(context: Context) =
-            Intent(context,WaterReminderService::class.java)
+            Intent(context, WaterReminderService::class.java)
                 .apply {
                     action = ACTION_DISMISS_NOTIFICATION
                 }
 
         fun newIntentActionWaterCount(context: Context) =
-            Intent(context,WaterReminderService::class.java)
+            Intent(context, WaterReminderService::class.java)
                 .apply {
                     action = ACTION_INCREMENT_WATER_COUNT
                 }

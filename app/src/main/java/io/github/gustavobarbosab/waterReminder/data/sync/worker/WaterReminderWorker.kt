@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import io.github.gustavobarbosab.waterReminder.data.notification.WaterReminderNotificationUtil
-import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreference
 import io.github.gustavobarbosab.waterReminder.data.storage.local.WaterAppPreferenceImpl
 
 class WaterReminderWorker(
@@ -12,10 +11,8 @@ class WaterReminderWorker(
     workerParams: WorkerParameters
 ) : Worker(appContext, workerParams) {
 
-    private val waterPreferences: WaterAppPreference = WaterAppPreferenceImpl()
-
     override fun doWork(): Result {
-        val totalWaterCups = waterPreferences.getTotalWaterCups(applicationContext)
+        val totalWaterCups = WaterAppPreferenceImpl.getTotalWaterCups()
         WaterReminderNotificationUtil.remindUser(applicationContext, totalWaterCups)
         return Result.success()
     }

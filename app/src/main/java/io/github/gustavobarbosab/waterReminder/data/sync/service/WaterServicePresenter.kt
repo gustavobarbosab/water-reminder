@@ -1,25 +1,24 @@
 package io.github.gustavobarbosab.waterReminder.data.sync.service
 
-class WaterServicePresenter(
-    private var waterService: WaterReminderService?
-) {
+import io.github.gustavobarbosab.waterReminder.data.repository.WaterReminderRepository
 
+class WaterServicePresenter(
+    private var waterService: WaterReminderServiceContract.Service?,
+    private val waterReminderRepository: WaterReminderRepository
+) : WaterReminderServiceContract.Presenter {
     // TODO criar contrato
 
-    fun incrementWaterCup(totalCups: Int) {
-        waterService?.saveNewTotalWaterCups(totalCups + 1)
+    override fun incrementWaterCup() {
+        waterReminderRepository.incrementWaterCup()
+        waterService?.notifyWaterCupUpdate()
         clearAllNotifications()
     }
 
-    fun rememberUser(totalWaterCups: Int) {
-        waterService?.reminderUser(totalWaterCups)
-    }
-
-    fun clearAllNotifications() {
+    override fun clearAllNotifications() {
         waterService?.clearAllNotifications()
     }
 
-    fun detach() {
+    override fun detach() {
         waterService = null
     }
 }
