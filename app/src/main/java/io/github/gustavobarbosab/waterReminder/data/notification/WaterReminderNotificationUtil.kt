@@ -38,7 +38,7 @@ class WaterReminderNotificationUtil {
                 val mChannel = NotificationChannel(
                     WATER_REMINDER_NOTIFICATION_CHANNEL_ID,
                     context.getString(R.string.main_notification_channel_name),
-                    NotificationManager.IMPORTANCE_HIGH
+                    NotificationManager.IMPORTANCE_LOW
                 )
                 notificationManager.createNotificationChannel(mChannel)
             }
